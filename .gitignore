@@ -2,3 +2,4 @@ build/*
 .vscode/*
 install/*
 log/*
+src/*/launch/__pycache__/*
