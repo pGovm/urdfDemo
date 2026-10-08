@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="https://www.ros.org/wiki/xacro" name="demo_robot">
+
+    <!-- Including file with inertial and color tags -->
+    <xacro:include filename="example_include.xacro"/>
+    
+    <!--Want the base link fixed-->
+    <link name='world'/>
+    
+    <joint name="base_joint" type="fixed">
+        <origin xyz="1.5 1.0 0.0" rpy="0 0 0"/>
+        <parent link='world'/>
+        <child link="base_link"/>
+    </joint>
+
+    <!--Rectangular plate-->
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="2.5 1.5 0.1" />
+            </geometry>
+            <origin xyz="0 0 0.05" />
+            <material name="green" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="2.5 1.5 0.1" />
+            </geometry>
+            <origin xyz="0 0 0.05" rpy="0 0 0" />
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0.05" rpy="0 0 0"/>
+            <mass value="12"/>
+            <inertia ixx="2.26" ixy="0.0" ixz="6.26" iyy="0.0" iyz="0" izz="8.5"/>
+        </inertial>
+    </link>
+
+    <joint name="slider_joint" type="prismatic">
+        <origin xyz="-1.25 0 0.1" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link = "slider_link" />
+        <axis xyz="1 0 0" />
+        <limit lower="0" upper = "2" velocity="100" effort="100" />
+    </joint>
+
+    <link name="slider_link">
+        <visual>
+            <geometry>
+                <box size="0.5 0.25 0.15" />
+            </geometry>
+            <origin xyz="0.25 0 0.075" />
+            <material name="blue" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.5 0.25 0.15" />
+            </geometry>
+            <origin xyz="0.25 0 0.075" />
+        </collision>
+        <xacro:inertial_box mass="0.5" x="0.5" y="0.25" z="0.15">
+            <origin xyz="0 0 0.075" rpy="0 0 0" />
+        </xacro:inertial_box>            
+    </link>
+
+    <joint name="arm_joint" type="revolute">
+        <origin xyz="0.25 0 0.15" rpy="0 0 0"/>
+        <parent link="slider_link"/>
+        <child link="arm_link"/>
+        <axis xyz="0 -1 0"/>
+        <limit lower="0" upper="${pi/2}" effort="100" velocity="100"/>
+    </joint>
+    
+    <xacro:property name="arm_length" value="1"/>
+    <xacro:property name="arm_radius" value="0.1"/>
+
+    <link name="arm_link">
+        <visual>
+            <geometry>
+                <cylinder length="${arm_length}" radius="${arm_radius}"/>
+            </geometry>
+            <origin xyz="${arm_length/2} 0 0" rpy="0 ${pi/2} 0"/>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="${arm_radius}" length="${arm_length}"/>
+            </geometry>
+            <origin xyz="${arm_length/2}" rpy="0 ${pi/2} 0"/>
+        </collision>
+        <xacro:inertial_cylinder mass="1.0" length="${arm_length}" radius="${arm_radius}">
+            <origin xyz="${arm_length/2} 0 0" rpy="0 ${pi/2} 0"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <joint name="camera_joint" type="fixed">
+        <origin xyz="${arm_length} 0 ${arm_radius + 0.075}" rpy="0 0 0"/>
+        <parent link="arm_link"/>
+        <child link="camera_link"/>
+    </joint>
+
+    <link name="camera_link">
+        <!-- Camer Box -->
+        <visual>
+            <geometry>
+                <box size="0.06 0.15 0.15"/>
+            </geometry>
+            <origin xyz="-0.03 0 0" rpy="0 0 0"/>
+            <material name="white"/>
+        </visual>
+
+        <!-- Camera Lens -->
+        <visual>
+            <geometry>
+                <cylinder radius="0.04" length="0.06"/>
+            </geometry>
+            <origin xyz="0.03 0 0" rpy="0 ${pi/2} 0"/>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.12 0.15 0.15"/>
+            </geometry>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </collision>
+        <xacro:inertial_box mass="0.1" x="0.12" y="0.15" z="0.15">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+</robot>
