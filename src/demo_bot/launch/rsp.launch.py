@@ -1,19 +1,26 @@
 import os
 
-import ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import Node
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch_ros.actions import Node
+from launch.substitutions import LaunchConfiguration, Command
+from ament_index_python.packages import get_package_share_directory
+
 import xacro
 
 def generate_launch_description():
-    # Specifying package name and xacro file path
-    pkg_path = os.path.join(get_package_share_directory('demo_bot'))
+     # Configuring launch params
+    use_sim_time = LaunchConfiguration('use_sim_time')
+
+    # Processing the urdf file
+    pkg_name = 'demo_bot'
+    pkg_path = os.path.join(get_package_share_directory(pkg_name))
     xacro_file = os.path.join(pkg_path, 'description', 'robot.urdf.xacro')
-    robot_description_config = xacro.process_file(xacro_file)
+    # robot_description_config = xacro.process_file(xacro_file).toxml()
+    robot_description_config = Command(['xacro ', xacro_file, ' sim_mode:=', use_sim_time])
 
     # Create the rsp node
-    params = {'robot_description': robot_description_config}
+    params = {'robot_description': robot_description_config, 'use_sim_time': use_sim_time}
     node_robot_state_publisher = Node(
         package = 'robot_state_publisher',
         executable = 'robot_state_publisher',
@@ -23,5 +30,11 @@ def generate_launch_description():
 
     # Launch the node
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value='false',
+            description='Use sim time if true'
+        ),
+
         node_robot_state_publisher
     ])
