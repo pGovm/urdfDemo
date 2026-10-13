@@ -42,15 +42,22 @@ def generate_launch_description():
         output = 'screen'
     )
 
+    node_diff_spawner = Node(
+        package = 'controller_manager',
+        executable = 'spawner',
+        arguments = ['diff_driveCont']
+    )
+
+    node_joint_broad_spawner = Node(
+        package = 'controller_manager',
+        executable = 'spawner',
+        arguments = ['joint_broad']
+    )
+
     node_gz_bridge = Node(
         package = 'ros_gz_bridge',
         executable = 'parameter_bridge',
-        arguments = [
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-            '/tf@tf2_msgs/msg/TFMessage[gz.msg.Pose_V',
-            '/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model'
-        ],
+        arguments = ['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
         output = 'screen'
     )
 
@@ -64,5 +71,7 @@ def generate_launch_description():
         node_rviz2,
         node_gz_sim,
         node_spawn,
+        node_diff_spawner,
+        node_joint_broad_spawner,
         node_gz_bridge
     ])
