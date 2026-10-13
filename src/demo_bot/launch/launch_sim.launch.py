@@ -25,11 +25,9 @@ def generate_launch_description():
     )
 
     # Creating the rviz2 launch node
-    node_rviz2 = Node(
-            package = 'rviz2',
-            executable = 'rviz2',
-            output = 'screen'
-        )
+    node_rviz2 = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(pkg_path, 'launch', 'rviz2.launch.py')])
+    )
 
     # Creating the gazebo launch node
     node_gz_sim = IncludeLaunchDescription(
