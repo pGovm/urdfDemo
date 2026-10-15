@@ -3,15 +3,13 @@ import os
 from launch_ros.actions import Node
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, Command
+from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
-import xacro
-
 def generate_launch_description():
     # Configuring launch params
-    use_sim_time = LaunchConfiguration('use_sim_time')
+    world = LaunchConfiguration('world')
 
     # Processing the urdf file
     pkg_name = 'demo_bot'
@@ -32,7 +30,7 @@ def generate_launch_description():
     # Creating the gazebo launch node
     node_gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(ros_gz_sim, 'launch', 'gz_sim.launch.py')),
-        launch_arguments = {'gz_args': '-r empty.sdf'}.items()
+        launch_arguments = {'gz_args': ['-r -v 4 ', world]}.items()
     )
 
     node_spawn = Node(
@@ -45,28 +43,32 @@ def generate_launch_description():
     node_diff_spawner = Node(
         package = 'controller_manager',
         executable = 'spawner',
-        arguments = ['diff_driveCont']
+        arguments = ['diff_driveCont', '--controller-manager-timeout', '60']
     )
 
     node_joint_broad_spawner = Node(
         package = 'controller_manager',
         executable = 'spawner',
-        arguments = ['joint_broad']
+        arguments = ['joint_broad', '--controller-manager-timeout', '60']
     )
 
     node_gz_bridge = Node(
         package = 'ros_gz_bridge',
         executable = 'parameter_bridge',
-        arguments = ['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        arguments = [
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan'    
+        ],
         output = 'screen'
     )
 
     return LaunchDescription([
         DeclareLaunchArgument(
-            'use_sim_time',
-            default_value = 'true',
-            description = 'Use sim time if True'
+            'world',
+            default_value = os.path.join(pkg_path, 'worlds', 'obstacles.sdf'),
+            description = 'World SDF file with obstacles'
         ),
+
         node_rsp,
         node_rviz2,
         node_gz_sim,
