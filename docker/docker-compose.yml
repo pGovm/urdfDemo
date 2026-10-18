@@ -1,0 +1,25 @@
+services:
+  demo_image:
+    image: ghcr.io/pgovm/demo-image:latest
+    container_name: fourth_pull
+    stdin_open: true
+    tty: true
+    privileged: true
+    network_mode: host
+    gpus: all
+
+    volumes:
+      - /home/govind/urdfDemo:/root/urdfDemo
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev:/dev 
+
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+
+    pull_policy: build
+    build:
+      dockerfile: docker/Dockerfile.demo
+      pull: true
+      context: ../

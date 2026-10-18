@@ -1,0 +1,42 @@
+# First stage: Building a base image
+FROM ros:jazzy-ros-base AS base
+
+# Installing required packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3-pip \
+    python3-yaml \
+    python3-rosdep \
+    cmake \
+    python3-argcomplete \
+    python3-colcon-common-extensions \
+    libboost-system-dev \
+    libudev-dev \
+    git \
+    nano \
+    xterm \
+    && rm -rf /var/lib/apt/lists/*
+
+# To source ros2 in all terminals by skipping base image entrypoint
+RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc
+
+WORKDIR /root
+
+CMD ["bash"]
+
+# Second stage: Collecting package.xml files for collective rosdep install
+FROM base AS manifests
+COPY src /tmp/src
+RUN mkdir /tmp/manifests && cd /tmp/src \
+    && find . -name package.xml -exec cp --parents {} /tmp/manifests \;
+
+# Final stage
+FROM base
+COPY --from=manifests /tmp/manifests /tmp/rosdep_src
+RUN apt-get update \
+    && rosdep install --from-paths /tmp/rosdep_src --ignore-src -y && \
+    rm -rf /var/lib/apt/lists/* /tmp/rosdep_src
+
+RUN . /opt/ros/jazzy/setup.sh \
+    && gz fuel download -u "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Construction Cone" \
+    && gz fuel download -u "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Construction Barrel"
