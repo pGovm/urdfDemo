@@ -65,7 +65,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'world',
-            default_value = os.path.join(pkg_path, 'worlds', 'obstacles.sdf'),
+            default_value = os.path.join(pkg_path, 'worlds', 'obstacles_primitives.sdf'),
             description = 'World SDF file with obstacles'
         ),
 
