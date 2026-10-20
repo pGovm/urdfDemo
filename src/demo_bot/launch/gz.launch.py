@@ -36,11 +36,24 @@ def generate_launch_description():
             output = 'screen'
     )
 
-    node_gz_image_bridge = Node(
-        package='ros_gz_image',
-        executable='image_bridge',
-        arguments=['/camera/image_raw']
+# RGBD Camera Topic
+    camera_bridge_params = os.path.join(pkg_share, 'config', 'gz_bridge_camera.yaml')
+    node_camera_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        parameters=[{
+            'config_file': camera_bridge_params,
+            'override_frame_id': 'camera_optical_link'
+        }],
+        output='screen'
     )
+
+# Normal Camera Topic
+    # node_gz_image_bridge = Node(
+    #     package='ros_gz_image',
+    #     executable='image_bridge',
+    #     arguments=['/camera/image_raw']
+    # )
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -52,5 +65,6 @@ def generate_launch_description():
         node_spawn,
         node_gz_sim,
         node_gz_bridge,
-        node_gz_image_bridge
+        node_camera_bridge,
+        # node_gz_image_bridge
     ])
