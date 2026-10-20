@@ -31,7 +31,7 @@ def generate_launch_description():
     node_diff_spawner = Node(
         package = 'controller_manager',
         executable = 'spawner',
-        arguments = ['diff_driveCont', '--controller-manager-timeout', '60']
+        arguments = ['diff_drive_controller', '--controller-manager-timeout', '60']
     )
 
     node_joint_broad_spawner = Node(
