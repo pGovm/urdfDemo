@@ -4,13 +4,13 @@ controller_manager:
     use_sim_time: true
 
 
-    diff_driveCont:
+    diff_drive_controller:
       type: diff_drive_controller/DiffDriveController
 
     joint_broad:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-diff_driveCont:
+diff_drive_controller:
   ros__parameters:
 
     publish_rate: 50.0
