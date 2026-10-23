@@ -4,7 +4,7 @@
     <joint name='camera_joint' type='fixed'>
         <parent link="chassis"/>
         <child link='camera_link'/>
-        <origin xyz='0.305 0  0.08' rpy='0 0 0'/>
+        <origin xyz='0.305 0  0.1' rpy='0 0 0'/>
     </joint>
 
     <link name="camera_link">
@@ -33,7 +33,7 @@
         <sensor name="camera" type="rgbd_camera">
             <pose>0 0 0 0 0 0</pose>
             <topic>camera</topic>
-            <gz_frame_id>camera_link</gz_frame_id>
+            <frame_id>camera_link</frame_id>
             <visualize>true</visualize>
             <update_rate>10</update_rate>
             <always_on>true</always_on>
