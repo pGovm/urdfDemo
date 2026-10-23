@@ -20,6 +20,6 @@ services:
 
     pull_policy: build
     build:
-      dockerfile: docker/Dockerfile.demo
+      dockerfile: docker/Dockerfile.lyrical
       pull: true
       context: ../
