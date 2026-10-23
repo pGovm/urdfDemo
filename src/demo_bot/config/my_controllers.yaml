@@ -13,8 +13,6 @@ controller_manager:
 diff_drive_controller:
   ros__parameters:
 
-    publish_rate: 50.0
-
     base_frame_id: base_link
     odom_frame_id: odom
 
@@ -23,8 +21,6 @@ diff_drive_controller:
 
     wheel_separation: 0.297
     wheel_radius: 0.033
-
-    use_stamped_vel: false
 
 # joint_broad:
 #   ros__parameters:  
